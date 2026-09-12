@@ -1,8 +1,8 @@
 document.addEventListener("DOMContentLoaded", function () {
     // --- ELEMEN FORM ---
     const form = document.getElementById("form-pendaftaran-lomba");
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbzixPGe1q87iXZ_3bcX3AR52Edit14J5_u8QlOUmekTahBPtZ-NPJfpkhFFCnTzEgO7Gw/exec'; // URL Web App Anda
-    const submitButton = form.querySelector('.submit');
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbxvin3F-lB5S--gWXhx3URC956rStdiaXhA2r9HLbTHseb6EeaX5nu78lQ_DHkkM6X6GQ/exec';
+    const submitButton = form ? form.querySelector('.submit') : null;
     const submitLabel = submitButton ? submitButton.querySelector('.retro-btn__label') : null;
 
     // --- ELEMEN UPLOAD UI ---
@@ -22,7 +22,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const modalMessage = document.getElementById('modal-message');
     const modalCloseButton = document.getElementById('modal-close-button');
 
-    // Helper untuk mengubah label tombol submit (retro-btn pakai <span>, bukan value)
     function setSubmitLabel(text) {
         if (submitLabel) {
             submitLabel.textContent = text;
@@ -31,130 +30,141 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Event listener utama saat form disubmit
-    form.addEventListener("submit", function (e) {
-        e.preventDefault();
+    if (form) {
+        form.addEventListener("submit", function (e) {
+            e.preventDefault();
 
-        loadingOverlay.style.display = 'flex'; // Tampilkan animasi loading
-        submitButton.disabled = true;
-        setSubmitLabel("Mengirim...");
+            if (loadingOverlay) loadingOverlay.style.display = 'flex';
+            if (submitButton) submitButton.disabled = true;
+            setSubmitLabel("Mengirim...");
 
-        const formData = new FormData(form);
-        const file = fileInput.files[0];
+            const formData = new FormData(form);
+            const file = fileInput && fileInput.files ? fileInput.files[0] : null;
 
-        if (file) {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => {
-                formData.delete('payment_proof');
-                formData.append('payment_proof_base64', reader.result);
-                formData.append('payment_proof_filename', file.name);
-                sendData(formData); // Kirim data setelah file dibaca
-            };
-            reader.onerror = (error) => {
-                loadingOverlay.style.display = 'none';
-                submitButton.disabled = false;
-                setSubmitLabel("KIRIM PENDAFTARAN");
-                showModal('❌', 'Gagal', 'Terjadi kesalahan saat membaca file. Silakan coba lagi.');
-            };
-        } else {
-            sendData(formData); // Langsung kirim jika tidak ada file
-        }
-    });
-
-    // Fungsi untuk mengirim data ke Google Apps Script
-    function sendData(formData) {
-        fetch(scriptURL, { method: "POST", body: formData })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === "success") {
-                    form.reset();
-                    resetUploadUI();
-                    resetPaymentSelections();
-                    showModal('✅', 'Berhasil Terkirim!', data.message);
-                } else {
-                    showModal('❌', 'Gagal!', data.message);
+            if (file) {
+                // Validasi ukuran file (Maks 5 MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    if (loadingOverlay) loadingOverlay.style.display = 'none';
+                    if (submitButton) submitButton.disabled = false;
+                    setSubmitLabel("KIRIM PENDAFTARAN");
+                    showModal('❌', 'Ukuran File Terlalu Besar', 'Maksimal ukuran file bukti pembayaran adalah 5 MB.');
+                    return;
                 }
-            })
-            .catch(error => {
-                console.error("Error!", error.message);
-                showModal('❌', 'Error Jaringan', 'Tidak dapat terhubung ke server. Periksa koneksi internet Anda dan coba lagi.');
-            })
-            .finally(() => {
-                loadingOverlay.style.display = 'none'; // Sembunyikan loading
-                submitButton.disabled = false;
-                setSubmitLabel("KIRIM PENDAFTARAN");
-            });
+
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = function () {
+                    formData.delete('payment_proof');
+                    formData.append('payment_proof_base64', reader.result);
+                    formData.append('payment_proof_filename', file.name);
+                    sendData(formData);
+                };
+                reader.onerror = function () {
+                    if (loadingOverlay) loadingOverlay.style.display = 'none';
+                    if (submitButton) submitButton.disabled = false;
+                    setSubmitLabel("KIRIM PENDAFTARAN");
+                    showModal('❌', 'Gagal', 'Terjadi kesalahan saat membaca file. Silakan coba lagi.');
+                };
+            } else {
+                sendData(formData);
+            }
+        });
     }
 
-    // --- FUNGSI UNTUK MODAL & UI ---
+    function sendData(formData) {
+        fetch(scriptURL, { 
+            method: "POST", 
+            body: formData 
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "success") {
+                form.reset();
+                resetUploadUI();
+                resetPaymentSelections();
+                showModal('✅', 'Berhasil Terkirim!', data.message || 'Data pendaftaran berhasil tersimpan.');
+            } else {
+                showModal('❌', 'Gagal!', data.message || 'Terjadi kesalahan pada server.');
+            }
+        })
+        .catch(error => {
+            console.error("Error!", error);
+            showModal('❌', 'Error Jaringan', 'Tidak dapat terhubung ke server. Periksa koneksi internet Anda.');
+        })
+        .finally(() => {
+            if (loadingOverlay) loadingOverlay.style.display = 'none';
+            if (submitButton) submitButton.disabled = false;
+            setSubmitLabel("KIRIM PENDAFTARAN");
+        });
+    }
+
+    // --- LOGIKA MODAL ---
     function showModal(icon, title, message) {
-        modalIcon.textContent = icon;
-        modalTitle.textContent = title;
-        modalMessage.textContent = message;
+        if (!modal) return;
+        if (modalIcon) modalIcon.textContent = icon;
+        if (modalTitle) modalTitle.textContent = title;
+        if (modalMessage) modalMessage.textContent = message;
 
         modal.style.display = 'flex';
-        setTimeout(() => modal.classList.add('show'), 10); // Memicu animasi fade-in
+        setTimeout(() => modal.classList.add('show'), 10);
     }
 
     function hideModal() {
+        if (!modal) return;
         modal.classList.remove('show');
-        setTimeout(() => modal.style.display = 'none', 300); // Tunggu animasi selesai
+        setTimeout(() => modal.style.display = 'none', 300);
     }
 
-    // Event listener untuk menutup modal
-    modalCloseButton.addEventListener('click', hideModal);
-    modal.addEventListener('click', function (e) {
-        if (e.target === modal) { // Tutup jika klik di luar box
-            hideModal();
-        }
-    });
+    if (modalCloseButton) modalCloseButton.addEventListener('click', hideModal);
+    if (modal) {
+        modal.addEventListener('click', function (e) {
+            if (e.target === modal) hideModal();
+        });
+    }
 
-    // --- LOGIKA UPLOAD FILE (drag & drop + klik) ---
+    // --- LOGIKA UPLOAD FILE ---
     function showUploadedState(filename) {
-        uploadLabel.style.display = 'none';
-        uploadSuccess.style.display = 'flex';
+        if (uploadLabel) uploadLabel.style.display = 'none';
+        if (uploadSuccess) uploadSuccess.style.display = 'flex';
         if (uploadFilename) uploadFilename.textContent = filename;
     }
 
     function resetUploadUI() {
-        uploadLabel.style.display = 'flex';
-        uploadSuccess.style.display = 'none';
+        if (uploadLabel) uploadLabel.style.display = 'flex';
+        if (uploadSuccess) uploadSuccess.style.display = 'none';
         if (uploadFilename) uploadFilename.textContent = '';
     }
 
-    if (fileBtn) {
-        fileBtn.addEventListener('click', function () {
-            fileInput.click();
+    if (fileBtn && fileInput) {
+        fileBtn.addEventListener('click', () => fileInput.click());
+    }
+
+    if (fileInput) {
+        fileInput.addEventListener('change', function () {
+            if (this.files && this.files.length > 0) {
+                showUploadedState(this.files[0].name);
+            }
         });
     }
 
-    fileInput.addEventListener('change', function () {
-        if (this.files.length > 0) {
-            showUploadedState(this.files[0].name);
-        }
-    });
-
-    if (changeFileButton) {
-        changeFileButton.addEventListener('click', function () {
-            fileInput.click();
-        });
+    if (changeFileButton && fileInput) {
+        changeFileButton.addEventListener('click', () => fileInput.click());
     }
 
-    if (dropzone) {
-        ['dragenter', 'dragover'].forEach(function (evt) {
-            dropzone.addEventListener(evt, function (e) {
+    if (dropzone && fileInput) {
+        ['dragenter', 'dragover'].forEach(evt => {
+            dropzone.addEventListener(evt, e => {
                 e.preventDefault();
                 dropzone.classList.add('is-dragover');
             });
         });
-        ['dragleave', 'drop'].forEach(function (evt) {
-            dropzone.addEventListener(evt, function (e) {
+        ['dragleave', 'drop'].forEach(evt => {
+            dropzone.addEventListener(evt, e => {
                 e.preventDefault();
                 dropzone.classList.remove('is-dragover');
             });
         });
-        dropzone.addEventListener('drop', function (e) {
+        dropzone.addEventListener('drop', e => {
             if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length) {
                 fileInput.files = e.dataTransfer.files;
                 showUploadedState(e.dataTransfer.files[0].name);
@@ -162,26 +172,23 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // --- LOGIKA PILIHAN KARTU RADIO (Metode Pembayaran & Status Pembayaran) ---
-    const SELECTED_ICON = 'https://www.figma.com/api/mcp/asset/cc524ac3-ed04-4d0a-87a5-ef31d7b331f6.svg';
-    const UNSELECTED_ICON = 'https://www.figma.com/api/mcp/asset/1c496614-f05c-4ed1-99ee-d5edec605a59.svg';
-
+    // --- LOGIKA KARTU RADIO ---
     function wireRadioCardGroup(selector) {
         const cards = document.querySelectorAll(selector);
-        cards.forEach(function (card) {
+        cards.forEach(card => {
             const input = card.querySelector('input[type="radio"]');
             if (!input) return;
             input.addEventListener('change', function () {
                 const groupName = input.name;
-                document.querySelectorAll('input[name="' + groupName + '"]').forEach(function (radio) {
+                document.querySelectorAll(`input[name="${groupName}"]`).forEach(radio => {
                     const parentCard = radio.closest('[data-payment-card], [data-status-option]');
                     const icon = parentCard ? parentCard.querySelector('[data-radio-icon]') : null;
                     if (radio.checked) {
                         if (parentCard) parentCard.classList.add('is-selected');
-                        if (icon) { icon.src = SELECTED_ICON; icon.alt = 'Dipilih'; }
+                        if (icon) icon.alt = 'Dipilih';
                     } else {
                         if (parentCard) parentCard.classList.remove('is-selected');
-                        if (icon) { icon.src = UNSELECTED_ICON; icon.alt = 'Belum dipilih'; }
+                        if (icon) icon.alt = 'Belum dipilih';
                     }
                 });
             });
@@ -189,46 +196,44 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function resetPaymentSelections() {
-        document.querySelectorAll('[data-payment-card], [data-status-option]').forEach(function (card) {
+        document.querySelectorAll('[data-payment-card], [data-status-option]').forEach(card => {
             card.classList.remove('is-selected');
             const icon = card.querySelector('[data-radio-icon]');
-            if (icon) { icon.src = UNSELECTED_ICON; icon.alt = 'Belum dipilih'; }
+            if (icon) icon.alt = 'Belum dipilih';
         });
     }
 
     wireRadioCardGroup('[data-payment-card]');
     wireRadioCardGroup('[data-status-option]');
 
-    // --- SALIN NOMOR REKENING/DANA ---
-    document.querySelectorAll('.copy-btn[data-copy]').forEach(function (btn) {
+    // --- SALIN NOMOR REKENING ---
+    document.querySelectorAll('.copy-btn[data-copy]').forEach(btn => {
         btn.addEventListener('click', function (e) {
             e.preventDefault();
             const value = btn.getAttribute('data-copy');
-            const original = btn.querySelector('span') ? btn.querySelector('span').textContent : '';
-            const restore = () => { if (btn.querySelector('span')) btn.querySelector('span').textContent = original; };
+            const span = btn.querySelector('span');
+            const original = span ? span.textContent : '';
 
             if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(value).then(function () {
-                    if (btn.querySelector('span')) btn.querySelector('span').textContent = 'Tersalin!';
-                    setTimeout(restore, 1500);
-                }).catch(function () {
-                    /* diamkan jika clipboard tidak tersedia */
+                navigator.clipboard.writeText(value).then(() => {
+                    if (span) span.textContent = 'Tersalin!';
+                    setTimeout(() => { if (span) span.textContent = original; }, 1500);
                 });
             }
         });
     });
 
-    // --- TOGGLE MENU NAVBAR (mobile) ---
+    // --- NAVBAR MOBILE ---
     const navToggle = document.getElementById('navToggle');
     const navLinks = document.getElementById('navLinks');
     if (navToggle && navLinks) {
-        navToggle.addEventListener('click', function () {
+        navToggle.addEventListener('click', () => {
             const isOpen = navToggle.getAttribute('aria-expanded') === 'true';
             navToggle.setAttribute('aria-expanded', String(!isOpen));
             navLinks.classList.toggle('is-open', !isOpen);
         });
-        navLinks.querySelectorAll('a').forEach(function (link) {
-            link.addEventListener('click', function () {
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
                 navToggle.setAttribute('aria-expanded', 'false');
                 navLinks.classList.remove('is-open');
             });

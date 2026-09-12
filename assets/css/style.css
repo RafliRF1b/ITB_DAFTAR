@@ -36,34 +36,14 @@ ul,li{
 	float: left;
 }
 
-/*==================== NAVBAR ====================*/
-nav {
-  display: flex;
-  background: linear-gradient(90deg, rgba(255, 248, 244, 1) 70%, rgba(141, 208, 249, 1) 100%);
-  justify-content: space-between; 
-  align-items: center;
-  padding: 1rem 2rem; /* Ubah dari 1rem 2rem jadi 1rem 1rem */
-  position: sticky; 
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 96px;
-  z-index: 1100;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  box-sizing: border-box; /* Pastikan padding tidak melebihi lebar */
-}
-
-nav .logo {
-    display: flex;
-    align-items: center;
-}
-
-nav .logo img {
-    /* PERBAIKAN: Gunakan height untuk ukuran logo yang lebih konsisten */
-    height: 60px; 
-    width: auto;
-    margin-right: 20px;
-}
+/*==================== NAVBAR (lama, sudah tidak dipakai) ====================
+   Blok nav / nav .logo / nav ul / nav ul li a di bawah ini dihapus karena
+   memakai selector tag <nav> yang otomatis "bocor" ke navbar baru
+   (.site-header / .nav / .nav__link) yang dipakai index.html sekarang —
+   itulah penyebab navbar index menutupi/menghalangi layar. Markup lama
+   (nav > ul > li > a, .logo, .menu-icon) sudah tidak ada di index.html,
+   jadi aturan-aturan itu aman dihapus sepenuhnya.
+   ========================================================================== */
 
 .gradient-text {
   background: linear-gradient(180deg, rgba(74, 50, 14, 1) 0%, rgba(226, 151, 56, 1) 100%);
@@ -71,57 +51,6 @@ nav .logo img {
   -webkit-text-fill-color: transparent; /* khusus Chrome/Safari */
   background-clip: text; /* untuk browser yang support */
   color: transparent; /* fallback */
-}
-
-nav .logo span {
-    color: #7B0211;
-    font-size: 32px;
-    font-weight: 700;
-    word-wrap: break-word;
-}
-
-nav ul {
-    display: flex;
-    align-items: center;
-    gap: 40px;
-    list-style: none;
-    margin: 0; /* Reset margin default dari ul */
-    padding: 0; /* Reset padding default dari ul */
-    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
-}
-
-nav ul li a {
-    text-decoration: none;
-    font-size: 1.25rem;
-    font-weight: 500;
-    background: linear-gradient(180deg, #58090F, #7C0211);
-    background-clip: text;
-    color: transparent;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    padding: 8px 0;
-    transition: background 300ms, border-bottom 300ms;
-    border-bottom: 1px solid rgba(221, 37, 37, 0);
-  }
-  
-  nav ul li a:hover {
-    background: linear-gradient(180deg, #000000b0, #ff0000);
-    background-clip: text;
-    color: transparent;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    border-bottom: 1px solid #ff0000b0;
-}
-
-.menu-icon {
-  font-size: 2.5rem;
-  display: none; /* Sembunyi di desktop */
-  cursor: pointer; /* Tambahkan cursor pointer */
-  background: linear-gradient(180deg, #58090F, #7C0211);
-  background-clip: text;
-  color: transparent;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
 }
 
 /* Tombol daftar  */
@@ -143,7 +72,7 @@ nav ul li a {
   height: 20px;
 }
 
-nav ul li a.register-btn:hover {
+.register-btn:hover {
   background: #E39738;
   background-color: #4b2e0e;
   transform: scale(1.05);
@@ -849,34 +778,6 @@ footer {
 
 /* Untuk Tablet (Landscape) & Desktop Kecil */
 @media (max-width: 1024px) {
-   .menu-icon {
-      display: block; /* tampilkan hamburger */
-    }
-
-    nav ul {
-      position: absolute;
-      top: 96px; /* tepat di bawah navbar */
-      left: 0;
-      width: 100%;
-      flex-direction: column;
-      align-items: center;
-      background: rgba(255, 248, 244, 0.95);
-      backdrop-filter: blur(5px);
-      padding: 2rem 0;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-
-      /* sembunyikan default */
-      transform: translateY(-120%);
-      opacity: 0;
-      pointer-events: none;
-      transition: all 0.3s ease;
-    }
-
-    nav ul.active {
-      transform: translateY(0);
-      opacity: 1;
-      pointer-events: auto;
-    }
     .hero-title h1 {
         font-size: 7em; /* 112px */
     }
@@ -1741,7 +1642,7 @@ footer {
   .identitas__poppy{
     position:absolute;
     left:calc(41.67% + 10px);
-    bottom: 250px;
+    bottom: 270px;
     width:86px; height:86px;
     z-index:2;
   }
@@ -1768,7 +1669,9 @@ footer {
     flex-wrap:wrap;
   }
   .maskot__figure{
-    width:368px;
+    position:relative;
+    top:300px;
+    width: 500px;
     max-width:100%;
     flex-shrink:0;
     overflow:hidden;
@@ -1801,7 +1704,7 @@ footer {
   }
   .maskot__item{
     display:flex;
-    gap:32px;
+    gap:24px;
     align-items:flex-start;
   }
   .maskot__item-frame{
@@ -1813,8 +1716,8 @@ footer {
   .maskot__item-copy{
     display:flex;
     flex-direction:column;
-    gap:16px;
-    padding-top:8px;
+    gap:0;
+    padding-top:0;
   }
   .maskot__item-title{
     font-family:var(--font-pixel);
@@ -1999,27 +1902,33 @@ footer {
     }
     .site-header{ padding:20px 32px; }
     .nav{
-      position:fixed;
-      top:0; right:0;
-      height:100vh;
-      width:280px;
-      background:var(--coklat-dirt);
+      display:none;
+      position:absolute;
+      top:100%;
+      left:0; right:0;
       flex-direction:column;
       align-items:flex-start;
-      justify-content:flex-start;
       gap:0;
-      padding:88px 32px 32px;
-      transform:translateX(100%);
-      transition:transform .35s ease;
+      background:var(--coklat-dirt);
+      padding:0 32px;
+      max-height:0;
+      overflow:hidden;
+      transition:max-height .35s ease, padding .35s ease;
       z-index:25;
     }
-    .nav.is-open{ transform:translateX(0); }
+    .nav.is-open{
+      display:flex;
+      max-height:400px;
+      padding:24px 32px;
+    }
     .nav__link{
+      display:block;
       width:100%;
       padding:14px 0;
       border-bottom:1px solid rgba(255,255,255,0.15);
       text-shadow:none;
     }
+    .nav__link:last-child{ border-bottom:none; }
     .hamburger{ display:flex; }
 
     .hero__content{ width:90%; }
@@ -2111,23 +2020,4 @@ footer {
     .footer__col{ min-width:120px; align-items:center; }
   }
 
-/* ---------------------------------------------------------------------
-   FIX: netralkan aturan tag lama `nav{...}` dan `footer{...}` (baris
-   atas file ini) supaya tidak "bocor" ke header/footer baru di atas,
-   yang sekarang memakai kelas .site-header / .nav / .site-footer.
-   Hanya berlaku di layar desktop (>1024px) supaya menu mobile (.nav.is-open)
-   dari style baru di atas tidak ikut ter-override.
-   --------------------------------------------------------------------- */
-@media (min-width:1025px){
-  .site-header .nav{
-    position:static;
-    background:none;
-    box-shadow:none;
-    width:auto;
-    height:auto;
-    padding:0;
-    justify-content:flex-start;
-    top:auto; left:auto;
-    z-index:auto;
-  }
-}
+
