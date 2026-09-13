@@ -1,12 +1,11 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // --- ELEMEN FORM ---
-    const form = document.getElementById("form-pendaftaran-lomba");
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbxvin3F-lB5S--gWXhx3URC956rStdiaXhA2r9HLbTHseb6EeaX5nu78lQ_DHkkM6X6GQ/exec';
-    const submitButton = form ? form.querySelector('.submit') : null;
-    const submitLabel = submitButton ? submitButton.querySelector('.retro-btn__label') : null;
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwTKEjqNnQ68cmAQ3XFm26v34DjgYQf5YQgSnKx0WHO6LAC1erktEgV9_AqcENHDLkD/exec';
 
-    // --- ELEMEN UPLOAD UI ---
-    const fileInput = document.getElementById('payment_proof');
+    const form = document.getElementById("formPendaftaran") || document.getElementById("form-pendaftaran-lomba");
+    const btnSubmit = document.getElementById("btnSubmit") || (form ? form.querySelector('.submit') : null);
+    const submitLabel = btnSubmit ? btnSubmit.querySelector('.retro-btn__label') : null;
+
+    const fileInput = document.getElementById('bukti_pembayaran') || document.getElementById('payment_proof');
     const dropzone = document.getElementById('dropzone');
     const fileBtn = document.getElementById('fileBtn');
     const uploadLabel = document.getElementById('upload-label');
@@ -14,7 +13,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const uploadFilename = document.getElementById('upload-filename');
     const changeFileButton = document.getElementById('change-file-button');
 
-    // --- ELEMEN UX ---
     const loadingOverlay = document.getElementById('loading-overlay');
     const modal = document.getElementById('custom-modal');
     const modalIcon = document.getElementById('modal-icon');
@@ -22,85 +20,197 @@ document.addEventListener("DOMContentLoaded", function () {
     const modalMessage = document.getElementById('modal-message');
     const modalCloseButton = document.getElementById('modal-close-button');
 
-    function setSubmitLabel(text) {
+    const onlyNumberFields = ['no_telp', 'no_rek', 'nominal'];
+    onlyNumberFields.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.setAttribute('inputmode', 'numeric');
+
+        el.addEventListener('keydown', function (e) {
+            if (
+                ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(e.key) ||
+                (e.ctrlKey || e.metaKey)
+            ) {
+                return;
+            }
+            if (!/^[0-9]$/.test(e.key)) {
+                e.preventDefault();
+            }
+        });
+
+        el.addEventListener('input', function () {
+            this.value = this.value.replace(/\D/g, '');
+        });
+    });
+
+    const onlyTextFields = ['nama', 'nama_pengirim'];
+    onlyTextFields.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+
+        el.addEventListener('keydown', function (e) {
+            if (/^[0-9]$/.test(e.key)) {
+                e.preventDefault();
+            }
+        });
+
+        el.addEventListener('input', function () {
+            this.value = this.value.replace(/[^a-zA-Z\s.,'’\-]/g, '');
+        });
+    });
+
+    const fileToBase64 = (file) => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = (error) => reject(error);
+    });
+
+    function setSubmitState(isLoading) {
+        if (btnSubmit) {
+            btnSubmit.disabled = isLoading;
+        }
         if (submitLabel) {
-            submitLabel.textContent = text;
-        } else if (submitButton) {
-            submitButton.value = text;
+            submitLabel.textContent = isLoading ? 'Mengirim Data...' : 'KIRIM PENDAFTARAN';
+        } else if (btnSubmit) {
+            btnSubmit.innerText = isLoading ? 'Mengirim Data...' : 'Kirim Pendaftaran';
+        }
+        if (loadingOverlay) {
+            loadingOverlay.style.display = isLoading ? 'flex' : 'none';
         }
     }
 
     if (form) {
-        form.addEventListener("submit", function (e) {
+        form.addEventListener("submit", async function (e) {
             e.preventDefault();
 
-            if (loadingOverlay) loadingOverlay.style.display = 'flex';
-            if (submitButton) submitButton.disabled = true;
-            setSubmitLabel("Mengirim...");
+            const namaInput = document.getElementById('nama');
+            const namaVal = namaInput ? namaInput.value.trim() : '';
+            if (/\d/.test(namaVal)) {
+                showModal('⚠️', 'Format Nama Tidak Sesuai', 'Nama Lengkap hanya boleh berupa huruf dan spasi.');
+                if (namaInput) namaInput.focus();
+                return;
+            }
 
-            const formData = new FormData(form);
+            const noTelpInput = document.getElementById('no_telp');
+            const noTelpVal = noTelpInput ? noTelpInput.value.trim() : '';
+            if (!/^\d+$/.test(noTelpVal)) {
+                showModal('⚠️', 'Format No Telp Tidak Sesuai', 'Nomor telepon hanya boleh berupa angka.');
+                if (noTelpInput) noTelpInput.focus();
+                return;
+            }
+
+            const namaPengirimInput = document.getElementById('nama_pengirim');
+            const namaPengirimVal = namaPengirimInput ? namaPengirimInput.value.trim() : '';
+            if (/\d/.test(namaPengirimVal)) {
+                showModal('⚠️', 'Format Nama Pengirim Tidak Sesuai', 'Nama Pengirim hanya boleh berupa huruf dan spasi.');
+                if (namaPengirimInput) namaPengirimInput.focus();
+                return;
+            }
+
+            const noRekInput = document.getElementById('no_rek');
+            const noRekVal = noRekInput ? noRekInput.value.trim() : '';
+            if (!/^\d+$/.test(noRekVal)) {
+                showModal('⚠️', 'Format No Rekening Tidak Sesuai', 'Nomor rekening/DANA hanya boleh berupa angka.');
+                if (noRekInput) noRekInput.focus();
+                return;
+            }
+
+            const nominalInput = document.getElementById('nominal');
+            const nominalVal = nominalInput ? nominalInput.value.trim() : '';
+            if (!/^\d+$/.test(nominalVal)) {
+                showModal('⚠️', 'Format Nominal Tidak Sesuai', 'Nominal pembayaran hanya boleh berupa angka.');
+                if (nominalInput) nominalInput.focus();
+                return;
+            }
+
             const file = fileInput && fileInput.files ? fileInput.files[0] : null;
+            if (!file) {
+                showModal('⚠️', 'Bukti Pembayaran Diperlukan', 'Silakan pilih atau unggah bukti transfer pembayaran Anda.');
+                return;
+            }
 
-            if (file) {
-                // Validasi ukuran file (Maks 5 MB)
-                if (file.size > 5 * 1024 * 1024) {
-                    if (loadingOverlay) loadingOverlay.style.display = 'none';
-                    if (submitButton) submitButton.disabled = false;
-                    setSubmitLabel("KIRIM PENDAFTARAN");
-                    showModal('❌', 'Ukuran File Terlalu Besar', 'Maksimal ukuran file bukti pembayaran adalah 5 MB.');
-                    return;
+            if (file.size > 5 * 1024 * 1024) {
+                showModal('❌', 'Ukuran File Terlalu Besar', 'Maksimal ukuran file bukti pembayaran adalah 5 MB.');
+                return;
+            }
+
+            const paymentRadio = document.querySelector('input[name="metode_pembayaran"]:checked') || document.querySelector('input[name="payment_method"]:checked');
+            const metodePembayaran = paymentRadio ? paymentRadio.value : (document.getElementById('metode_pembayaran')?.value || '');
+
+            const statusRadio = document.querySelector('input[name="status_pembayaran"]:checked');
+            const statusPembayaran = statusRadio ? statusRadio.value : (document.getElementById('status_pembayaran')?.value || '');
+
+            if (!metodePembayaran) {
+                showModal('⚠️', 'Metode Pembayaran Kosong', 'Silakan pilih salah satu metode pembayaran yang tersedia (DANA / SeaBank).');
+                return;
+            }
+
+            if (!statusPembayaran) {
+                showModal('⚠️', 'Status Pembayaran Kosong', 'Silakan tentukan status pembayaran Anda (DP atau Lunas).');
+                return;
+            }
+
+            const npmInput = document.getElementById('npm');
+            const npmVal = npmInput ? npmInput.value.trim() : '';
+
+            setSubmitState(true);
+
+            try {
+                const fileBase64 = await fileToBase64(file);
+                const fileName = `${npmVal}_${file.name}`;
+                const fileMimeType = file.type || 'image/jpeg';
+
+                const payload = {
+                    nama: namaVal,
+                    npm: npmVal,
+                    email: (document.getElementById('email')?.value || '').trim(),
+                    no_telp: noTelpVal,
+                    kelas: (document.getElementById('kelas')?.value || '').trim(),
+                    kelompok: (document.getElementById('kelompok')?.value || '').trim(),
+                    metode_pembayaran: metodePembayaran,
+                    nama_pengirim: namaPengirimVal,
+                    no_rek: noRekVal,
+                    nominal: nominalVal,
+                    tgl_pembayaran: document.getElementById('tgl_pembayaran')?.value || '',
+                    status_pembayaran: statusPembayaran,
+                    fileData: fileBase64,
+                    fileName: fileName,
+                    fileMimeType: fileMimeType
+                };
+
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'text/plain;charset=utf-8',
+                    },
+                    body: JSON.stringify(payload),
+                });
+
+                const result = await response.json();
+
+                if (result.result === 'success' || result.status === 'success') {
+                    form.reset();
+                    resetUploadUI();
+                    resetPaymentSelections();
+                    showModal('✅', 'Pendaftaran Berhasil!', 'Data pendaftaran dan bukti pembayaran berhasil dikirim dan tersimpan di sistem.');
+                } else {
+                    showModal('❌', 'Gagal Mengirim Data', result.error || result.message || 'Terjadi kendala saat memproses data pendaftaran.');
                 }
-
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = function () {
-                    formData.delete('payment_proof');
-                    formData.append('payment_proof_base64', reader.result);
-                    formData.append('payment_proof_filename', file.name);
-                    sendData(formData);
-                };
-                reader.onerror = function () {
-                    if (loadingOverlay) loadingOverlay.style.display = 'none';
-                    if (submitButton) submitButton.disabled = false;
-                    setSubmitLabel("KIRIM PENDAFTARAN");
-                    showModal('❌', 'Gagal', 'Terjadi kesalahan saat membaca file. Silakan coba lagi.');
-                };
-            } else {
-                sendData(formData);
+            } catch (error) {
+                console.error('Error submitting form:', error);
+                showModal('❌', 'Kesalahan Koneksi', 'Terjadi kesalahan koneksi saat mengirim data. Pastikan internet Anda aktif dan silakan coba lagi.');
+            } finally {
+                setSubmitState(false);
             }
         });
     }
 
-    function sendData(formData) {
-        fetch(scriptURL, { 
-            method: "POST", 
-            body: formData 
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === "success") {
-                form.reset();
-                resetUploadUI();
-                resetPaymentSelections();
-                showModal('✅', 'Berhasil Terkirim!', data.message || 'Data pendaftaran berhasil tersimpan.');
-            } else {
-                showModal('❌', 'Gagal!', data.message || 'Terjadi kesalahan pada server.');
-            }
-        })
-        .catch(error => {
-            console.error("Error!", error);
-            showModal('❌', 'Error Jaringan', 'Tidak dapat terhubung ke server. Periksa koneksi internet Anda.');
-        })
-        .finally(() => {
-            if (loadingOverlay) loadingOverlay.style.display = 'none';
-            if (submitButton) submitButton.disabled = false;
-            setSubmitLabel("KIRIM PENDAFTARAN");
-        });
-    }
-
-    // --- LOGIKA MODAL ---
     function showModal(icon, title, message) {
-        if (!modal) return;
+        if (!modal) {
+            alert(`${title}\n${message}`);
+            return;
+        }
         if (modalIcon) modalIcon.textContent = icon;
         if (modalTitle) modalTitle.textContent = title;
         if (modalMessage) modalMessage.textContent = message;
@@ -122,7 +232,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // --- LOGIKA UPLOAD FILE ---
     function showUploadedState(filename) {
         if (uploadLabel) uploadLabel.style.display = 'none';
         if (uploadSuccess) uploadSuccess.style.display = 'flex';
@@ -133,6 +242,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (uploadLabel) uploadLabel.style.display = 'flex';
         if (uploadSuccess) uploadSuccess.style.display = 'none';
         if (uploadFilename) uploadFilename.textContent = '';
+        if (fileInput) fileInput.value = '';
     }
 
     if (fileBtn && fileInput) {
@@ -172,7 +282,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // --- LOGIKA KARTU RADIO ---
     function wireRadioCardGroup(selector) {
         const cards = document.querySelectorAll(selector);
         cards.forEach(card => {
@@ -180,6 +289,12 @@ document.addEventListener("DOMContentLoaded", function () {
             if (!input) return;
             input.addEventListener('change', function () {
                 const groupName = input.name;
+
+                const hiddenEl = document.getElementById(groupName);
+                if (hiddenEl && hiddenEl.type === 'hidden') {
+                    hiddenEl.value = input.value;
+                }
+
                 document.querySelectorAll(`input[name="${groupName}"]`).forEach(radio => {
                     const parentCard = radio.closest('[data-payment-card], [data-status-option]');
                     const icon = parentCard ? parentCard.querySelector('[data-radio-icon]') : null;
@@ -201,12 +316,15 @@ document.addEventListener("DOMContentLoaded", function () {
             const icon = card.querySelector('[data-radio-icon]');
             if (icon) icon.alt = 'Belum dipilih';
         });
+        const hiddenMetode = document.getElementById('metode_pembayaran');
+        if (hiddenMetode && hiddenMetode.type === 'hidden') hiddenMetode.value = '';
+        const hiddenStatus = document.getElementById('status_pembayaran');
+        if (hiddenStatus && hiddenStatus.type === 'hidden') hiddenStatus.value = '';
     }
 
     wireRadioCardGroup('[data-payment-card]');
     wireRadioCardGroup('[data-status-option]');
 
-    // --- SALIN NOMOR REKENING ---
     document.querySelectorAll('.copy-btn[data-copy]').forEach(btn => {
         btn.addEventListener('click', function (e) {
             e.preventDefault();
@@ -223,7 +341,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    // --- NAVBAR MOBILE ---
     const navToggle = document.getElementById('navToggle');
     const navLinks = document.getElementById('navLinks');
     if (navToggle && navLinks) {

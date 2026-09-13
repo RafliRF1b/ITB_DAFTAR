@@ -182,7 +182,7 @@
     <!-- End Hero + Navbar -->
 
     <main>
-    <form id="form-pendaftaran-lomba" name="form-pendaftaran-lomba">
+    <form id="formPendaftaran" name="form-pendaftaran-lomba">
 
         <!-- ================= DATA DIRI ================= -->
         <section class="data-diri" id="data-diri" aria-labelledby="data-diri-heading">
@@ -211,7 +211,7 @@
                             <p class="form-card__desc">Nama lengkap sesuai identitas</p>
                         </div>
                         <label class="form-card__input">
-                            <input type="text" name="nama_lengkap" id="Nama" placeholder="Contoh: Prabowo Gibran" required />
+                            <input type="text" name="nama" id="nama" placeholder="Contoh: Prabowo Gibran" required />
                         </label>
                     </div>
 
@@ -228,7 +228,7 @@
                             <p class="form-card__desc">Nomor pokok mahasiswa</p>
                         </div>
                         <label class="form-card__input">
-                            <input type="text" name="npm" id="NPM" placeholder="Contoh: 2210631170xxx" required />
+                            <input type="text" name="npm" id="npm" placeholder="Contoh: 2210631170xxx" required />
                         </label>
                     </div>
 
@@ -245,7 +245,7 @@
                             <p class="form-card__desc">Email aktif untuk informasi</p>
                         </div>
                         <label class="form-card__input">
-                            <input type="email" name="email" id="Email" placeholder="email@example.com" required />
+                            <input type="email" name="email" id="email" placeholder="email@example.com" required />
                         </label>
                     </div>
 
@@ -262,7 +262,7 @@
                             <p class="form-card__desc">Nomor WhatsApp yang aktif</p>
                         </div>
                         <label class="form-card__input">
-                            <input type="text" name="no_telepon" id="NoTelepon" placeholder="08XX-XXXX-XXXX" required />
+                            <input type="text" name="no_telp" id="no_telp" placeholder="08XXXXXXXXXX" inputmode="numeric" required />
                         </label>
                     </div>
 
@@ -279,7 +279,7 @@
                             <p class="form-card__desc">Masukkan Kelas kamu</p>
                         </div>
                         <label class="form-card__input">
-                            <input type="text" name="kelas" id="Kelas" placeholder="Contoh: 3IK1" required />
+                            <input type="text" name="kelas" id="kelas" placeholder="Contoh: 3IK1" required />
                         </label>
                     </div>
 
@@ -296,7 +296,7 @@
                             <p class="form-card__desc">Masukkan kelompok yang telah ditentukan</p>
                         </div>
                         <label class="form-card__input">
-                            <input type="text" name="nama_kelompok" id="NamaKelompok" placeholder="Nama Kelompok" required />
+                            <input type="text" name="kelompok" id="kelompok" placeholder="Nama Kelompok" required />
                         </label>
                     </div>
                 </div>
@@ -316,10 +316,11 @@
                     </div>
                 </div>
 
+                <input type="hidden" id="metode_pembayaran" value="" />
                 <div class="payment-cards" id="payment-cards">
                     <!-- Dana -->
                     <label class="payment-card payment-card--light" data-payment-card>
-                        <input type="radio" name="payment_method" value="dana" required />
+                        <input type="radio" name="metode_pembayaran" value="Dana" required />
                         <div class="payment-card__body">
                             <div class="payment-card__top">
                                 <div class="payment-card__logo">
@@ -346,7 +347,7 @@
 
                     <!-- Seabank -->
                     <label class="payment-card payment-card--dark" data-payment-card>
-                        <input type="radio" name="payment_method" value="seabank" required />
+                        <input type="radio" name="metode_pembayaran" value="Seabank" required />
                         <div class="payment-card__body">
                             <div class="payment-card__top">
                                 <div class="payment-card__logo">
@@ -401,7 +402,7 @@
                             <p class="form-card__desc">Nama pemilik rekening pembayaran</p>
                         </div>
                         <label class="form-card__input">
-                            <input type="text" name="nama_pengirim" id="NamaPengirim" placeholder="Contoh: Prabowo Gibran" required />
+                            <input type="text" name="nama_pengirim" id="nama_pengirim" placeholder="Contoh: Prabowo Gibran" required />
                         </label>
                     </div>
 
@@ -418,7 +419,7 @@
                             <p class="form-card__desc">Nomor rekening/DANA yang digunakan</p>
                         </div>
                         <label class="form-card__input">
-                            <input type="text" name="no_rekening" id="NoRekening" placeholder="08XX-XXXX-XXXX" required />
+                            <input type="text" name="no_rek" id="no_rek" placeholder="08XXXXXXXXXX" inputmode="numeric" required />
                         </label>
                     </div>
 
@@ -435,7 +436,7 @@
                             <p class="form-card__desc">Jumlah pembayaran yang dikirim</p>
                         </div>
                         <label class="form-card__input">
-                            <input type="text" name="nominal" id="Nominal" placeholder="Contoh: 67000" required />
+                            <input type="text" name="nominal" id="nominal" placeholder="Contoh: 67000" inputmode="numeric" required />
                         </label>
                     </div>
 
@@ -452,7 +453,7 @@
                             <p class="form-card__desc">Tanggal saat pembayaran dilakukan</p>
                         </div>
                         <label class="form-card__input">
-                            <input type="date" name="tanggal_pembayaran" id="TanggalPembayaran" required />
+                            <input type="date" name="tgl_pembayaran" id="tgl_pembayaran" required />
                         </label>
                     </div>
                 </div>
@@ -470,9 +471,10 @@
                         <p class="form-card__desc">Pilih status pembayaranmu</p>
                     </div>
 
+                    <input type="hidden" id="status_pembayaran" value="" />
                     <div class="status-options" id="status-options">
                         <label class="status-option" data-status-option>
-                            <input type="radio" name="status_pembayaran" value="dp" required />
+                            <input type="radio" name="status_pembayaran" value="DP" required />
                             <div class="status-option__text">
                                 <span class="status-option__title">DP</span>
                                 <span class="status-option__desc">Bayar sebagian terlebih dahulu</span>
@@ -481,7 +483,7 @@
                             <img class="status-option__radio" data-radio-icon src="assets/img/daftar/icon/pilihan.svg" alt="Belum dipilih">
                         </label>
                         <label class="status-option" data-status-option>
-                            <input type="radio" name="status_pembayaran" value="lunas" required />
+                            <input type="radio" name="status_pembayaran" value="Lunas" required />
                             <div class="status-option__text">
                                 <span class="status-option__title">Lunas</span>
                                 <span class="status-option__desc">Pembayaran sudah selesai</span>
@@ -506,7 +508,7 @@
                     </div>
 
                     <div class="upload-zone" id="dropzone">
-                        <input type="file" name="payment_proof" id="payment_proof" accept=".jpg,.jpeg,.png,.pdf" style="display:none;" required />
+                        <input type="file" name="bukti_pembayaran" id="bukti_pembayaran" accept=".jpg,.jpeg,.png,.pdf" style="display:none;" required />
 
                         <div class="upload-zone__inner" id="upload-label">
                             <img class="upload-zone__icon" src="assets/img/daftar/icon/upload.svg" alt="Ikon unggah">
@@ -525,7 +527,7 @@
                 </div>
 
                 <div class="confirm__submit">
-                    <button class="submit retro-btn" type="submit" style="width:389px;">
+                    <button class="submit retro-btn" type="submit" id="btnSubmit" style="width:389px;">
                         <span class="retro-btn__label">KIRIM PENDAFTARAN</span>
                         <span class="retro-btn__dot" style="width:20px;height:10px;left:56px;top:15px;"></span>
                         <span class="retro-btn__dot" style="width:10px;height:10px;left:37px;top:25px;"></span>

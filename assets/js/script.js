@@ -135,7 +135,7 @@ function closePopup() {
 
 // UPLOAD FILE
   document.addEventListener("DOMContentLoaded", function () {
-	const fileInput = document.getElementById("payment_proof");
+	const fileInput = document.getElementById("bukti_pembayaran") || document.getElementById("payment_proof");
 	const uploadSuccess = document.getElementById("upload-success");
 	const changeFileButton = document.getElementById("change-file-button");
 	const uploadLabel = document.getElementById("upload-label");
