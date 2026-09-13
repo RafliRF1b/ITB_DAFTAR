@@ -1062,7 +1062,7 @@ footer {
   }
 
   *,*::before,*::after{ box-sizing:border-box; }
-  html{ scroll-behavior:smooth; }
+  html{ scroll-behavior:smooth; overflow-x:hidden; }
   body{
     margin:0;
     background:var(--putih-gading);
@@ -1259,7 +1259,7 @@ footer {
   .hero__title-badge{
     width:100%;
     aspect-ratio:1024/107;
-    margin-bottom:-28px;
+    margin-bottom:-2.73%;
     object-fit:cover;
   }
   .hero__title-main{
@@ -1830,8 +1830,16 @@ footer {
     display:flex;
     align-items:center;
     justify-content:center;
+    padding:0;
+    line-height:0;
+    flex-shrink:0;
   }
-  .footer__social img{ width:28px; height:28px; }
+  .footer__social img{
+    width:28px; height:28px;
+    display:block;
+    object-fit:contain;
+    margin:0;
+  }
 
   .footer__links{
     display:flex;
@@ -1959,6 +1967,15 @@ footer {
 
     .footer__top{ justify-content:center; text-align:center; }
     .footer__links{ justify-content:center; width:100%; }
+
+    .pendaftaran{ overflow:hidden; }
+    .pendaftaran__land{
+      left:50%;
+      top:0;
+      transform:translateX(-50%);
+      width:160vw;
+      height:220px;
+    }
   }
 
   /* ============ RESPONSIVE: MOBILE ============ */
@@ -1996,7 +2013,14 @@ footer {
     .skill-card{ width:100%; max-width:348px; height:auto; padding-bottom:24px; }
     .skill-card__desc{ width:100%; }
 
-    .pendaftaran{ padding-top:60px; }
+    .pendaftaran{ padding-top:60px; overflow:hidden; }
+    .pendaftaran__land{
+      left:50%;
+      top:0;
+      transform:translateX(-50%);
+      width:220vw;
+      height:140px;
+    }
     .pendaftaran__card{ padding:48px 20px; min-height:auto; }
     .pendaftaran__text{ max-width:100%; }
     .btn-pixel, .pendaftaran__content{ width:100%; }

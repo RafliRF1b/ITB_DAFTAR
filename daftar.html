@@ -18,7 +18,7 @@
     <!-- Icon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
     <link rel="shortcut icon" href="assets/img/logo/pekanit.png" type="image/x-icon">
-    <link rel="icon" href="assets/img/logo/itbootcamp.png" type="image/x-icon">
+    <link rel="icon" href="assets/img/logo/logo_itb.png" type="image/x-icon">
 </head>
 <body>
     <!-- Preloader -->
@@ -316,6 +316,42 @@
                     </div>
                 </div>
 
+                     <!-- Status Pembayaran -->
+                <div class="form-card status-card">
+                    <div class="form-card__header">
+                        <div class="form-card__title-row">
+                            <div class="form-card__icon">
+                                <img class="form-card__icon-bg" src="assets/img/logo/frame_bg.jpg" alt="">
+                                <div class="form-card__icon-slot"><img src="assets/img/daftar/icon/xp.svg" alt=""></div>
+                            </div>
+                            <span class="form-card__title">Tipe Pembayaran</span>
+                        </div>
+                        <p class="form-card__desc">Pilih opsi pembayaran yang ingin kamu gunakan saat ini.</p>
+                    </div>
+
+                    <input type="hidden" id="status_pembayaran" value="" />
+                    <div class="status-options" id="status-options">
+                        <label class="status-option" data-status-option>
+                            <input type="radio" name="status_pembayaran" value="DP" required />
+                            <div class="status-option__text">
+                                <span class="status-option__title">DP/Cicil</span>
+                                <span class="status-option__desc">Bayar sebagian terlebih dahulu</span>
+                                <span class="status-option__desc">Tahap 1: 50k | Tahap 2: 50k | Tahap 3: 15k    </span>
+                            </div>
+                            <img class="status-option__radio" data-radio-icon src="assets/img/daftar/icon/pilihan.svg" alt="Belum dipilih">
+                        </label>
+                        <label class="status-option" data-status-option>
+                            <input type="radio" name="status_pembayaran" value="Lunas" required />
+                            <div class="status-option__text">
+                                <span class="status-option__title">Lunas</span>
+                                <span class="status-option__desc">Pembayaran sudah selesai</span>
+                                <span class="status-option__desc">Bayar Rp115.000</span>
+                            </div>
+                            <img class="status-option__radio" data-radio-icon src="assets/img/daftar/icon/pilihan.svg" alt="Belum dipilih">
+                        </label>
+                    </div>
+                </div>
+
                 <input type="hidden" id="metode_pembayaran" value="" />
                 <div class="payment-cards" id="payment-cards">
                     <!-- Dana -->
@@ -332,12 +368,12 @@
                                 </div>
                             </div>
                             <div class="payment-card__account">
-                                <span class="payment-card__account-name">Anisa Diyah Ayu Lestari</span>
+                                <span class="payment-card__account-name">Luckyta Rizqia Jubaedi</span>
                                 <div class="payment-card__account-number-row">
-                                    <span class="payment-card__account-number">089519345513</span>
+                                    <span class="payment-card__account-number">085714901222</span>
                                 </div>
                             </div>
-                            <button class="copy-btn" type="button" data-copy="089519345513">
+                            <button class="copy-btn" type="button" data-copy="085714901222">
                                 <span>Salin No. Dana</span>
                                 <img src="assets/img/daftar/icon/copy.svg" alt="">
                             </button>
@@ -346,7 +382,7 @@
                     </label>
 
                     <!-- Seabank -->
-                    <label class="payment-card payment-card--dark" data-payment-card>
+                    <label class="payment-card payment-card--light" data-payment-card>
                         <input type="radio" name="metode_pembayaran" value="Seabank" required />
                         <div class="payment-card__body">
                             <div class="payment-card__top">
@@ -359,12 +395,12 @@
                                 </div>
                             </div>
                             <div class="payment-card__account">
-                                <span class="payment-card__account-name">Anisa Diyah Ayu Lestari</span>
+                                <span class="payment-card__account-name">Luckyta Rizqia Jubaedi</span>
                                 <div class="payment-card__account-number-row">
-                                    <span class="payment-card__account-number">901352264661</span>
+                                    <span class="payment-card__account-number">901014645610</span>
                                 </div>
                             </div>
-                            <button class="copy-btn" type="button" data-copy="901352264661">
+                            <button class="copy-btn" type="button" data-copy="901014645610">
                                 <span>Salin No. Rek</span>
                                 <img src="assets/img/daftar/icon/copy.svg" alt="">
                             </button>
@@ -458,41 +494,7 @@
                     </div>
                 </div>
 
-                <!-- Status Pembayaran -->
-                <div class="form-card status-card">
-                    <div class="form-card__header">
-                        <div class="form-card__title-row">
-                            <div class="form-card__icon">
-                                <img class="form-card__icon-bg" src="assets/img/logo/frame_bg.jpg" alt="">
-                                <div class="form-card__icon-slot"><img src="assets/img/daftar/icon/xp.svg" alt=""></div>
-                            </div>
-                            <span class="form-card__title">Status Pembayaran</span>
-                        </div>
-                        <p class="form-card__desc">Pilih status pembayaranmu</p>
-                    </div>
-
-                    <input type="hidden" id="status_pembayaran" value="" />
-                    <div class="status-options" id="status-options">
-                        <label class="status-option" data-status-option>
-                            <input type="radio" name="status_pembayaran" value="DP" required />
-                            <div class="status-option__text">
-                                <span class="status-option__title">DP</span>
-                                <span class="status-option__desc">Bayar sebagian terlebih dahulu</span>
-                                <span class="status-option__desc">Minimal Rp67.000</span>
-                            </div>
-                            <img class="status-option__radio" data-radio-icon src="assets/img/daftar/icon/pilihan.svg" alt="Belum dipilih">
-                        </label>
-                        <label class="status-option" data-status-option>
-                            <input type="radio" name="status_pembayaran" value="Lunas" required />
-                            <div class="status-option__text">
-                                <span class="status-option__title">Lunas</span>
-                                <span class="status-option__desc">Pembayaran sudah selesai</span>
-                                <span class="status-option__desc">Bayar Rp167.000</span>
-                            </div>
-                            <img class="status-option__radio" data-radio-icon src="assets/img/daftar/icon/pilihan.svg" alt="Belum dipilih">
-                        </label>
-                    </div>
-                </div>
+           
 
                 <!-- Bukti Pembayaran -->
                 <div class="form-card">
@@ -518,7 +520,11 @@
                         </div>
 
                         <div class="upload-zone__inner" id="upload-success" style="display:none;">
-                            <div class="upload-zone__success-icon">&#10003;</div>
+                            <div class="upload-zone__success-icon">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                    <path d="M5 13L9 17L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </div>
                             <p class="upload-zone__title">Berhasil diunggah!</p>
                             <p class="upload-zone__filename" id="upload-filename"></p>
                             <button class="change-file-btn" type="button" id="change-file-button">Ganti File</button>
@@ -549,47 +555,63 @@
             <div class="footer-brand">
                 <div class="footer-brand__logo-row">
                     <div class="footer-brand__logo">
-                        <img src="assets/img/logo/logo_itb.png" alt="Logo HIMTIKA">
+                        <img src="assets/img/logo/logo_itb.png" alt="Logo IT Bootcamp">
                     </div>
-                    <span class="footer-brand__name">HIMTIKA</span>
+                    <span class="footer-brand__name">IT Bootcamp</span>
                 </div>
                 <p class="footer-brand__address">Jl. HS.Ronggo Waluyo, Puseurjaya, Telukjambe Timur, Karawang</p>
                 <div class="footer-brand__socials">
-                    <a href="https://www.instagram.com/himtika_unsika/" target="_blank" aria-label="Instagram"><img src="https://www.figma.com/api/mcp/asset/864e4f96-250d-4dd6-bd1b-31b3e596e7c2.svg" alt=""></a>
-                    <a href="https://www.tiktok.com/@himtika_unsika" target="_blank" aria-label="TikTok"><img src="https://www.figma.com/api/mcp/asset/ca5d6cb9-e2ea-46cf-bcdc-f660277c2d7f.svg" alt=""></a>
-                    <a href="https://www.linkedin.com/company/himtika/" target="_blank" aria-label="LinkedIn"><img src="https://www.figma.com/api/mcp/asset/af2780f7-592a-44e1-9943-0f598ffb4794.svg" alt=""></a>
-                    <a href="https://www.youtube.com/@himtikaofficial4428" target="_blank" aria-label="YouTube"><img src="https://www.figma.com/api/mcp/asset/09ad4ee9-8816-4297-9667-e1ff6724fab2.svg" alt=""></a>
+                    <a href="https://www.instagram.com/himtika_unsika/" target="_blank" aria-label="Instagram"><img src="assets/img/icon/ig.png" alt=""></a>
+                    <a href="https://www.tiktok.com/@himtika_unsika" target="_blank" aria-label="TikTok"><img src="assets/img/icon/tiktok.png" alt=""></a>
+                    <a href="https://www.linkedin.com/company/himtika/" target="_blank" aria-label="LinkedIn"><img src="assets/img/icon/lkdin.png" alt=""></a>
+                    <a href="https://www.youtube.com/@himtikaofficial4428" target="_blank" aria-label="YouTube"><img src="assets/img/icon/yt.png" alt=""></a>
+                    <a href="#" aria-label="Email"><img src="assets/img/icon/email.png" alt=""></a>
                 </div>
             </div>
 
             <div class="footer-links">
                 <div class="footer-links__col">
-                    <span class="footer-links__title">Media</span>
+                    <span class="footer-links__title">Tentang Kami</span>
                     <ul class="footer-links__list">
-                        <li><a href="#">Berita</a></li>
-                        <li><a href="#">Artikel HIMTIKA</a></li>
-                        <li><a href="#">Beasiswa</a></li>
-                        <li><a href="#">Kegiatan Mahasiswa</a></li>
+                        <li><a href="#">Struktur Organisasi</a></li>
+                        <li><a href="#">Sejarah</a></li>
+                        <li><a href="#">Logo</a></li>
+                        <li><a href="#">Galeri</a></li>
+                        <li><a href="#">Grand Design</a></li>
+                        <li><a href="#">Visi Misi</a></li>
+                        <li><a href="#">Kontak Kami</a></li>
                     </ul>
                 </div>
                 <div class="footer-links__col">
-                    <span class="footer-links__title">Event</span>
+                    <span class="footer-links__title">Media</span>
                     <ul class="footer-links__list">
-                        <li><a href="https://himtika.cs.unsika.ac.id/semantik_9/">SEMANTIK 9.0</a></li>
-                        <li><a href="https://himtika.cs.unsika.ac.id/pekan-it/">PEKAN IT</a></li>
-                        <li><a href="https://himtika.cs.unsika.ac.id/lkmmpd/">LKMM-PD</a></li>
-                        <li><a href="https://himtika.cs.unsika.ac.id/diesnatalis">Diesnatalis</a></li>
-                        <li><a href="https://himtika.cs.unsika.ac.id/it-bootcamp/">IT Bootcamp</a></li>
-                        <li><a href="https://himtika.cs.unsika.ac.id/open-project/">Open Project</a></li>
+                        <li><a href="#">Berita</a></li>
+                        <li><a href="#">Beasiswa</a></li>
+                        <li><a href="#">Artikel HIMTIKA</a></li>
+                        <li><a href="#">Kegiatan Mahasiswa</a></li>
                     </ul>
                 </div>
                 <div class="footer-links__col">
                     <span class="footer-links__title">Aplikasi Publik</span>
                     <ul class="footer-links__list">
+                        <li><a href="https://himtika.cs.unsika.ac.id/">Himtalks</a></li>
+                        <li><a href="https://himtika.cs.unsika.ac.id/">Hikode</a></li>
                         <li><a href="https://himtika.cs.unsika.ac.id/corporation/">Corporation</a></li>
-                        <li><a href="https://himtika.cs.unsika.ac.id/himtika-awards/">HIMTIKA Award</a></li>
+                        <li><a href="#">Media Partner</a></li>
                         <li><a href="https://himtika.cs.unsika.ac.id/studyclub-2024/">Study Club</a></li>
-                        <li><a href="https://himtika.cs.unsika.ac.id/corporation/">Studio IT</a></li>
+                        <li><a href="#">Tenaga Pendidik</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links__col">
+                    <span class="footer-links__title">Event</span>
+                    <ul class="footer-links__list">
+                        <li><a href="https://himtika.cs.unsika.ac.id/pekan-it/">Pekan IT</a></li>
+                        <li><a href="https://himtika.cs.unsika.ac.id/semantik_9/">SEMANTIK</a></li>
+                        <li><a href="https://himtika.cs.unsika.ac.id/open-project/">Open project</a></li>
+                        <li><a href="https://himtika.cs.unsika.ac.id/diesnatalis">Diesnatalis</a></li>
+                        <li><a href="https://himtika.cs.unsika.ac.id/lkmmpd/">LKMM-PD</a></li>
+                        <li><a href="https://himtika.cs.unsika.ac.id/it-bootcamp/">IT Bootcamp</a></li>
+                        <li><a href="#">HGTC</a></li>
                     </ul>
                 </div>
             </div>
@@ -600,8 +622,8 @@
         <div class="footer-license">
             <p class="footer-license__text">Licensed, Registered and authorized by</p>
             <div class="footer-license__brand">
-                <img src="assets/img/logo/himtika.png" alt="HIMTIKA Logo">
-                <span>HIMTIKA 2025</span>
+                <img src="assets/img/logo/himtika.png" alt="Logo HIMTIKA">
+                <span>HIMTIKA 2026</span>
             </div>
         </div>
     </footer>
