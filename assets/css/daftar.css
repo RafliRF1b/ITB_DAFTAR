@@ -411,7 +411,7 @@ a { color: inherit; text-decoration: none; }
   align-items: center;
   width: 100%;
 }
-.hero__title img:first-child { margin-bottom: -34px; width: 100%; }
+.hero__title img:first-child { margin-bottom: -3.5%; width: 100%; }
 .hero__title img:last-child { width: 100%; }
 .hero__subtitle {
   font-family: var(--font-body);
