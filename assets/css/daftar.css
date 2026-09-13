@@ -563,8 +563,8 @@ a { color: inherit; text-decoration: none; }
   color: var(--color-white);
 }
 .status-option__text { display: flex; flex-direction: column; gap: var(--space-8); align-items: flex-start; }
-.status-option__title { font-family: var(--font-pixel); font-size: var(--fs-payment-title); white-space: nowrap; }
-.status-option__desc { font-family: var(--font-body); font-weight: 600; font-size: 20px; white-space: nowrap; }
+.status-option__title { font-family: var(--font-pixel); font-size: var(--fs-payment-title); }
+.status-option__desc { font-family: var(--font-body); font-weight: 600; font-size: var(--fs-payment-sub); }
 .status-option__radio {
   width: 32px;
   height: 32px;
