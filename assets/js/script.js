@@ -103,7 +103,33 @@ if (menuIcon && menuList) {
   });
 })();
 
+// ### NAVBAR
+// Navbar Fixed
+const navMenu = document.querySelector('#nav-menu');
 
+function updateNavbar() {
+  const header = document.querySelector("#navbar");
+
+  if (window.scrollY <= 400) {
+    header.classList.remove("navbar-fixed");
+    header.classList.add("navbar-absolute");
+    header.style.transform = "translateY(0)";
+    header.style.opacity = "1";
+  } else if (window.scrollY <= 600) {
+    header.style.transform = "translateY(-10px)";
+    header.style.opacity = "0";
+    navMenu.classList.remove("dropdown-appear");
+    navMenu.classList.add("hidden");
+  } else {
+    header.classList.add("navbar-fixed");
+    header.classList.remove("navbar-absolute");
+    header.style.transform = "translateY(0)";
+    header.style.opacity = "1";
+  }
+}
+
+window.addEventListener("scroll", updateNavbar);
+updateNavbar();
 
 // LIVE HERO SECTION
 document.addEventListener("DOMContentLoaded", function () {
@@ -118,20 +144,102 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // DOKUMENTASI SECTION
-document.querySelectorAll('.slider-track').forEach(track => {
-  track.innerHTML += track.innerHTML; // Gandakan isi track
+document.addEventListener("DOMContentLoaded", function () {
+    
+// 1. AUTO DUPLICATE UNTUK ANIMATION LOOP SEAMLESS
+function setupInfiniteTrack(trackId) {
+    const track = document.getElementById(trackId);
+    if (!track) return;
+    
+    const children = Array.from(track.children);
+    children.forEach(child => {
+        const clone = child.cloneNode(true);
+        track.appendChild(clone);
+    });
+}
+
+setupInfiniteTrack("slide-track-1");
+setupInfiniteTrack("slide-track-2");
+
+// 2. LOGIC POPUP & SLIDER BARIS 1 (AGATE)
+const track1 = document.getElementById("slide-track-1");
+const imagesBaris1 = Array.from(track1.querySelectorAll(".image"));
+const popup1 = document.getElementById("popup-1");
+const closeBtn1 = document.getElementById("close-btn-1");
+const largeImage1 = document.getElementById("large-image-1");
+const imageIndex1 = document.getElementById("index-1");
+const leftArrow1 = document.getElementById("left-arrow-1");
+const rightArrow1 = document.getElementById("right-arrow-1");
+
+let currentIdx1 = 0;
+const uniqueSources1 = Array.from(new Set(imagesBaris1.map(img => img.src)));
+
+function updatePopup1(index) {
+    currentIdx1 = (index + uniqueSources1.length) % uniqueSources1.length;
+    largeImage1.src = uniqueSources1[currentIdx1];
+    imageIndex1.textContent = String(currentIdx1 + 1).padStart(2, '0');
+}
+
+// track1.addEventListener("click", function (e) {
+//     const clickedSlide = e.target.closest(".slide");
+//     if (!clickedSlide) return;
+
+//     const img = clickedSlide.querySelector("img");
+//     if (img) {
+//         const originalIndex = uniqueSources1.indexOf(img.src);
+//         updatePopup1(originalIndex !== -1 ? originalIndex : 0);
+//         popup1.classList.add("active");
+//     }
+// });
+
+closeBtn1.addEventListener("click", () => popup1.classList.remove("active"));
+leftArrow1.addEventListener("click", () => updatePopup1(currentIdx1 - 1));
+rightArrow1.addEventListener("click", () => updatePopup1(currentIdx1 + 1));
+
+
+// 3. LOGIC POPUP & SLIDER BARIS 2 (HGTC)
+const track2 = document.getElementById("slide-track-2");
+const imagesBaris2 = Array.from(track2.querySelectorAll(".image-2"));
+const popup2 = document.getElementById("popup-2");
+const closeBtn2 = document.getElementById("close-btn-2");
+const largeImage2 = document.getElementById("large-image-2");
+const imageIndex2 = document.getElementById("index-2");
+const leftArrow2 = document.getElementById("left-arrow-2");
+const rightArrow2 = document.getElementById("right-arrow-2");
+
+let currentIdx2 = 0;
+const uniqueSources2 = Array.from(new Set(imagesBaris2.map(img => img.src)));
+
+function updatePopup2(index) {
+    currentIdx2 = (index + uniqueSources2.length) % uniqueSources2.length;
+    largeImage2.src = uniqueSources2[currentIdx2];
+    imageIndex2.textContent = String(currentIdx2 + 1).padStart(2, '0');
+}
+
+// track2.addEventListener("click", function (e) {
+//     const clickedSlide = e.target.closest(".slide");
+//     if (!clickedSlide) return;
+
+//     const img = clickedSlide.querySelector("img");
+//     if (img) {
+//         const originalIndex = uniqueSources2.indexOf(img.src);
+//         updatePopup2(originalIndex !== -1 ? originalIndex : 0);
+//         popup2.classList.add("active-2");
+//     }
+// });
+
+closeBtn2.addEventListener("click", () => popup2.classList.remove("active-2"));
+leftArrow2.addEventListener("click", () => updatePopup2(currentIdx2 - 1));
+rightArrow2.addEventListener("click", () => updatePopup2(currentIdx2 + 1));
+
+// Tutup popup dengan tombol Esc
+document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") {
+        popup1.classList.remove("active");
+        popup2.classList.remove("active-2");
+    }
 });
-
-function openPopup(imageSrc) {
-  const popup = document.getElementById("popup");
-  const popupImage = document.getElementById("popup-image");
-  popupImage.src = imageSrc;
-  popup.style.display = "flex";
-}
-
-function closePopup() {
-  document.getElementById("popup").style.display = "none";
-}
+});
 
 // UPLOAD FILE
   document.addEventListener("DOMContentLoaded", function () {

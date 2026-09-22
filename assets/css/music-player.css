@@ -1,0 +1,235 @@
+/* ============================================================
+   MUSIC PLAYER — Hybrid UI (bingkai retro-pixel + isi modern)
+   Warna & font mengambil variabel :root milik situs (--hijau-rumput, dst).
+   Bila halaman tidak memilikinya (mis. pendaftaran.html memakai daftar.css),
+   nilai cadangan di bawah otomatis dipakai -> tampilan tetap identik.
+   ============================================================ */
+
+.music-player{
+  --mp-green:var(--hijau-rumput, #70b237);
+  --mp-green-dark:var(--hijau-rumput-gelap, #60992e);
+  --mp-bg:var(--coklat-dirt-dark, #2a1c16);
+  --mp-ivory:var(--putih-gading, #e6e5dd);
+  --mp-white:var(--putih, #ffffff);
+  --mp-black:var(--hitam, #000000);
+  --mp-font:var(--font-body, 'Plus Jakarta Sans', sans-serif);
+  --mp-xs:8px;
+  --mp-sm:16px;
+  --mp-3xl:48px;
+
+  position:fixed;
+  left:var(--mp-sm);
+  bottom:var(--mp-sm);
+  z-index:8000;                     /* di bawah .popup (9000) */
+  display:flex;
+  align-items:flex-end;
+  gap:var(--mp-xs);
+  user-select:none;
+  /* keadaan awal: tersembunyi di bawah layar (slide-up saat .is-ready) */
+  transform:translateY(calc(100% + var(--mp-3xl)));
+  transition:transform .55s cubic-bezier(.22,1,.36,1);
+}
+.music-player.is-ready{ transform:translateY(0); }
+
+/* ---------- Tombol Toggle Buka/Tutup (pixel) ---------- */
+.music-player__toggle{
+  position:relative;
+  z-index:2;
+  flex:0 0 48px;
+  width:48px;
+  height:48px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:0;
+  background:var(--mp-green);
+  color:var(--mp-white);
+  border:4px solid var(--mp-black);
+  border-radius:4px;
+  box-shadow:
+    4px 4px 0 #000000,
+    inset 3px 3px 0 rgba(255,255,255,0.28),
+    inset -3px -3px 0 rgba(0,0,0,0.22);
+  transition:background .15s ease, transform .1s ease, box-shadow .1s ease;
+}
+.music-player__toggle:hover{ background:var(--mp-green-dark); }
+.music-player__toggle:active{
+  transform:translate(2px,2px);
+  box-shadow:
+    2px 2px 0 #000000,
+    inset 3px 3px 0 rgba(255,255,255,0.28),
+    inset -3px -3px 0 rgba(0,0,0,0.22);
+}
+.music-player__toggle:focus-visible,
+.music-player__play:focus-visible{ outline:3px solid var(--mp-white); outline-offset:2px; }
+.music-player__toggle svg{ width:24px; height:24px; display:block; filter:drop-shadow(0 2px 0 rgba(0,0,0,0.35)); }
+
+/* ---------- Panel (area clip untuk animasi geser kiri/kanan) ---------- */
+.music-player__panel{
+  overflow:hidden;
+  padding:0 var(--mp-xs) var(--mp-xs) 0;      /* ruang untuk hard shadow */
+  margin-bottom:calc(var(--mp-xs) * -1);
+}
+.music-player:not(.is-open) .music-player__panel{
+  visibility:hidden;                                 /* tidak bisa di-tab / diklik saat tertutup */
+  transition:visibility 0s linear .45s;
+}
+
+/* ---------- Kartu ---------- */
+.music-player__card{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  width:min(320px, calc(100vw - 96px));
+  padding:12px 14px;
+  background:var(--mp-bg);
+  color:var(--mp-white);
+  font-family:var(--mp-font);
+  border:4px solid var(--mp-black);
+  border-radius:6px;
+  box-shadow:6px 6px 0 #000000;                      /* hard shadow tanpa blur */
+  transform:translateX(calc(-100% - var(--mp-sm)));   /* tertutup: geser ke kiri */
+  transition:transform .45s cubic-bezier(.22,1,.36,1);
+}
+.music-player.is-open .music-player__card{ transform:translateX(0); }   /* terbuka: geser ke kanan */
+
+/* ---------- Vinyl / Disc ---------- */
+.music-player__disc{
+  position:relative;
+  flex:0 0 56px;
+  width:56px;
+  height:56px;
+  border-radius:50%;
+  background:
+    conic-gradient(from 0deg, transparent 0 18%, rgba(255,255,255,0.16) 25%, transparent 32% 68%, rgba(255,255,255,0.16) 75%, transparent 82% 100%),
+    repeating-radial-gradient(circle at center, #171717 0 2px, #2a2a2a 2px 3px);
+  box-shadow:0 0 0 2px rgba(255,255,255,0.14);
+  animation:mp-spin 3.2s linear infinite;
+  animation-play-state:paused;
+}
+.music-player__disc::after{                          /* label tengah default (tanpa cover) */
+  content:"";
+  position:absolute;
+  top:50%; left:50%;
+  width:38%; height:38%;
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+  background:
+    radial-gradient(circle, var(--mp-black) 0 12%, transparent 14%),
+    var(--mp-green);
+  box-shadow:inset 0 0 0 2px var(--mp-green-dark);
+}
+.music-player__cover{
+  position:absolute;
+  top:50%; left:50%;
+  z-index:1;
+  width:38%; height:38%;
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+  object-fit:cover;
+}
+.music-player__cover[hidden]{ display:none; }
+
+/* ---------- Info lagu ---------- */
+.music-player__info{
+  flex:1 1 auto;
+  min-width:0;                                       /* wajib agar ellipsis bekerja di flex */
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+.music-player__label{
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--mp-green);
+}
+.music-player__title{
+  font-size:14px;
+  font-weight:700;
+  line-height:1.3;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  text-decoration: underline;
+}
+.music-player__artist{
+  font-size:12px;
+  font-weight:500;
+  color:rgba(255,255,255,0.65);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+/* ---------- Equalizer (5 bar) ---------- */
+.music-player__eq{
+  flex:0 0 auto;
+  display:flex;
+  align-items:flex-end;
+  gap:3px;
+  height:28px;
+}
+.music-player__eq span{
+  width:4px;
+  height:100%;
+  border-radius:1px;
+  background:var(--mp-green);
+  transform-origin:bottom;
+  transform:scaleY(.25);
+  animation:mp-eq-a .9s ease-in-out infinite alternate;
+  animation-play-state:paused;
+}
+.music-player__eq span:nth-child(1){ animation-name:mp-eq-a; animation-duration:.80s; animation-delay:-.20s; }
+.music-player__eq span:nth-child(2){ animation-name:mp-eq-b; animation-duration:1.10s; animation-delay:-.50s; }
+.music-player__eq span:nth-child(3){ animation-name:mp-eq-c; animation-duration:.70s; animation-delay:-.10s; }
+.music-player__eq span:nth-child(4){ animation-name:mp-eq-b; animation-duration:.95s; animation-delay:-.70s; }
+.music-player__eq span:nth-child(5){ animation-name:mp-eq-a; animation-duration:1.20s; animation-delay:-.35s; }
+
+/* ---------- Tombol Play / Pause ---------- */
+.music-player__play{
+  flex:0 0 40px;
+  width:40px;
+  height:40px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:0;
+  background:var(--mp-ivory);
+  color:var(--mp-bg);
+  border:none;
+  border-radius:50%;
+  transition:transform .12s ease, background .15s ease;
+}
+.music-player__play:hover{ background:var(--mp-white); transform:scale(1.08); }
+.music-player__play:active{ transform:scale(.94); }
+.music-player__play svg{ width:18px; height:18px; display:block; }
+/* Satu ikon saja: sedang diputar -> ikon PAUSE, sedang dijeda -> ikon PLAY.
+   Selector sengaja lebih spesifik dari `.music-player__play svg` agar display:none tidak tertimpa. */
+.music-player__play .music-player__icon-pause{ display:none; }
+.music-player.is-playing .music-player__play .music-player__icon-play{ display:none; }
+.music-player.is-playing .music-player__play .music-player__icon-pause{ display:block; }
+
+/* ---------- Animasi aktif hanya saat lagu diputar ---------- */
+.music-player.is-playing .music-player__disc,
+.music-player.is-playing .music-player__eq span{ animation-play-state:running; }
+
+@keyframes mp-spin{ to{ transform:rotate(360deg); } }
+@keyframes mp-eq-a{ 0%{transform:scaleY(.20)} 25%{transform:scaleY(.90)} 50%{transform:scaleY(.40)} 75%{transform:scaleY(1)}   100%{transform:scaleY(.30)} }
+@keyframes mp-eq-b{ 0%{transform:scaleY(.50)} 30%{transform:scaleY(.15)} 60%{transform:scaleY(.95)} 100%{transform:scaleY(.45)} }
+@keyframes mp-eq-c{ 0%{transform:scaleY(.30)} 20%{transform:scaleY(1)}   55%{transform:scaleY(.25)} 80%{transform:scaleY(.70)} 100%{transform:scaleY(.40)} }
+
+/* ---------- Responsive ---------- */
+@media (max-width:480px){
+  .music-player{ left:12px; bottom:12px; }
+  .music-player__card{ gap:10px; padding:10px 12px; }
+  .music-player__disc{ flex-basis:48px; width:48px; height:48px; }
+  .music-player__eq{ gap:2px; }
+  .music-player__eq span{ width:3px; }
+}
+
+@media (prefers-reduced-motion:reduce){
+  .music-player,
+  .music-player__card{ transition-duration:.01s; }
+}
