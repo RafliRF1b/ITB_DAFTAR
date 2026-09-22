@@ -187,19 +187,66 @@ document.addEventListener("DOMContentLoaded", function () {
                     body: JSON.stringify(payload),
                 });
 
-                const result = await response.json();
+                // Jangan langsung response.json().
+                // Baca sebagai text terlebih dahulu supaya error response bisa ditangani.
+                const responseText = await response.text();
+                let result;
 
+                try {
+                    result = JSON.parse(responseText);
+                } catch (parseError) {
+                    console.error('Response server bukan JSON yang valid:', responseText);
+                    throw new Error('SERVER_RESPONSE_INVALID');
+                }
+
+                if (!response.ok) {
+                    throw new Error(
+                        result.error ||
+                        result.message ||
+                        `Server mengembalikan HTTP ${response.status}`
+                    );
+                }
                 if (result.result === 'success' || result.status === 'success') {
                     form.reset();
                     resetUploadUI();
                     resetPaymentSelections();
-                    showModal('✅', 'Pendaftaran Berhasil!', 'Data pendaftaran dan bukti pembayaran berhasil dikirim dan tersimpan di sistem.');
+
+                    showModal(
+                        '✅',
+                        'Pendaftaran Berhasil!',
+                        'Data pendaftaran dan bukti pembayaran berhasil dikirim dan tersimpan di sistem.'
+                    );
+                } else if (result.result === 'duplicate') {
+                    showModal(
+                        'ℹ️',
+                        'Pendaftaran Sudah Tercatat',
+                        result.message ||
+                        'Pendaftaran dengan NPM ini sudah tercatat di sistem. Kamu tidak perlu mengirim ulang.'
+                    );
                 } else {
-                    showModal('❌', 'Gagal Mengirim Data', result.error || result.message || 'Terjadi kendala saat memproses data pendaftaran.');
+                    showModal(
+                        '❌',
+                        'Gagal Mengirim Data',
+                        result.error ||
+                        result.message ||
+                        'Terjadi kendala saat memproses data pendaftaran.'
+                    );
                 }
             } catch (error) {
                 console.error('Error submitting form:', error);
-                showModal('❌', 'Kesalahan Koneksi', 'Terjadi kesalahan koneksi saat mengirim data. Pastikan internet Anda aktif dan silakan coba lagi.');
+                if (error.message === 'SERVER_RESPONSE_INVALID') {
+                    showModal(
+                        '⚠️',
+                        'Pengiriman Belum Dapat Dikonfirmasi',
+                        'Data mungkin sudah berhasil tersimpan di sistem, tetapi konfirmasi dari server tidak dapat dibaca. Jangan langsung mengirim ulang. Jika diperlukan, coba sekali lagi karena sistem akan mencegah pendaftaran ganda berdasarkan NPM.'
+                    );
+                } else {
+                    showModal(
+                        '⚠️',
+                        'Pengiriman Belum Dapat Dikonfirmasi',
+                        'Pengiriman belum dapat dipastikan berhasil atau gagal. Periksa koneksi internet. Jika mencoba lagi, sistem akan mencegah pendaftaran ganda berdasarkan NPM.'
+                    );
+                }
             } finally {
                 setSubmitState(false);
             }
