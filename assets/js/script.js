@@ -24,10 +24,6 @@ document.addEventListener("keydown", function (event) {
     console.log("Inspect Element telah dinonaktifkan!"); // Debugging
   }
 });
-// Mencegah Klik Kanan
-document.addEventListener("contextmenu", function (event) {
-  event.preventDefault();
-});
 // Mencegah Drag & Drop pada Semua Gambar
 document.addEventListener("dragstart", function (event) {
   event.preventDefault();
@@ -145,100 +141,110 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // DOKUMENTASI SECTION
 document.addEventListener("DOMContentLoaded", function () {
-    
-// 1. AUTO DUPLICATE UNTUK ANIMATION LOOP SEAMLESS
-function setupInfiniteTrack(trackId) {
-    const track = document.getElementById(trackId);
+    const track = document.getElementById("slide-track-1");
     if (!track) return;
-    
-    const children = Array.from(track.children);
-    children.forEach(child => {
+
+    // Array 14 foto lengkap milik ITB
+    const allImages = Array.from({ length: 14 }, (_, i) => `assets/img/dokumentasi/bg-it-bootcamp-${i + 1}.webp`);
+
+    // 1. DUPLIKASI SLIDE & SWAP FOTO KE-8 SAMPAI KE-14
+    const originalChildren = Array.from(track.children);
+    originalChildren.forEach((child, idx) => {
         const clone = child.cloneNode(true);
+        const cloneImg = clone.querySelector("img");
+        
+        // Pasang foto 8 - 14 ke elemen kloning
+        if (cloneImg && allImages[idx + 7]) {
+            cloneImg.src = allImages[idx + 7];
+        }
         track.appendChild(clone);
     });
-}
 
-setupInfiniteTrack("slide-track-1");
-setupInfiniteTrack("slide-track-2");
+    // 2. SETUP POPUP GALLERY
+    const popup = document.getElementById("popup-1");
+    const closeBtn = document.getElementById("close-btn-1");
+    const largeImage = document.getElementById("large-image-1");
+    const imageIndex = document.getElementById("index-1");
+    const leftArrow = document.getElementById("left-arrow-1");
+    const rightArrow = document.getElementById("right-arrow-1");
 
-// 2. LOGIC POPUP & SLIDER BARIS 1 (AGATE)
-const track1 = document.getElementById("slide-track-1");
-const imagesBaris1 = Array.from(track1.querySelectorAll(".image"));
-const popup1 = document.getElementById("popup-1");
-const closeBtn1 = document.getElementById("close-btn-1");
-const largeImage1 = document.getElementById("large-image-1");
-const imageIndex1 = document.getElementById("index-1");
-const leftArrow1 = document.getElementById("left-arrow-1");
-const rightArrow1 = document.getElementById("right-arrow-1");
+    let currentIndex = 0;
 
-let currentIdx1 = 0;
-const uniqueSources1 = Array.from(new Set(imagesBaris1.map(img => img.src)));
+    const imageCaptions = [
+        "Kedatangan Peserta",
+        "Pembukaan Acara oleh MC",
+        "Materi 1: Pengenalan Dunia IT Dan Prospek Kerjanya",
+        "Materi 2: Workshop Web Development",
+        "Coding Peserta Sesi Workshop",
+        "Foto Bersama Pemateri Workshop",
+        "Sesi Pensi (Pentas Seni)",
+        "Sesi Makrab Pensi",
+        "Pengukuhan",
+        "Pengukuhan: GMIF (Ketua Angkatan) Terpilih",
+        "GMIF Terpilih: Bayu Kresna Mukti",
+        "Pengukuhan",
+        "Senam Pagi",
+        "Games"
+    ];
 
-function updatePopup1(index) {
-    currentIdx1 = (index + uniqueSources1.length) % uniqueSources1.length;
-    largeImage1.src = uniqueSources1[currentIdx1];
-    imageIndex1.textContent = String(currentIdx1 + 1).padStart(2, '0');
-}
+    const popupCaption = document.getElementById("popup-caption-1");
 
-// track1.addEventListener("click", function (e) {
-//     const clickedSlide = e.target.closest(".slide");
-//     if (!clickedSlide) return;
-
-//     const img = clickedSlide.querySelector("img");
-//     if (img) {
-//         const originalIndex = uniqueSources1.indexOf(img.src);
-//         updatePopup1(originalIndex !== -1 ? originalIndex : 0);
-//         popup1.classList.add("active");
-//     }
-// });
-
-closeBtn1.addEventListener("click", () => popup1.classList.remove("active"));
-leftArrow1.addEventListener("click", () => updatePopup1(currentIdx1 - 1));
-rightArrow1.addEventListener("click", () => updatePopup1(currentIdx1 + 1));
-
-
-// 3. LOGIC POPUP & SLIDER BARIS 2 (HGTC)
-const track2 = document.getElementById("slide-track-2");
-const imagesBaris2 = Array.from(track2.querySelectorAll(".image-2"));
-const popup2 = document.getElementById("popup-2");
-const closeBtn2 = document.getElementById("close-btn-2");
-const largeImage2 = document.getElementById("large-image-2");
-const imageIndex2 = document.getElementById("index-2");
-const leftArrow2 = document.getElementById("left-arrow-2");
-const rightArrow2 = document.getElementById("right-arrow-2");
-
-let currentIdx2 = 0;
-const uniqueSources2 = Array.from(new Set(imagesBaris2.map(img => img.src)));
-
-function updatePopup2(index) {
-    currentIdx2 = (index + uniqueSources2.length) % uniqueSources2.length;
-    largeImage2.src = uniqueSources2[currentIdx2];
-    imageIndex2.textContent = String(currentIdx2 + 1).padStart(2, '0');
-}
-
-// track2.addEventListener("click", function (e) {
-//     const clickedSlide = e.target.closest(".slide");
-//     if (!clickedSlide) return;
-
-//     const img = clickedSlide.querySelector("img");
-//     if (img) {
-//         const originalIndex = uniqueSources2.indexOf(img.src);
-//         updatePopup2(originalIndex !== -1 ? originalIndex : 0);
-//         popup2.classList.add("active-2");
-//     }
-// });
-
-closeBtn2.addEventListener("click", () => popup2.classList.remove("active-2"));
-leftArrow2.addEventListener("click", () => updatePopup2(currentIdx2 - 1));
-rightArrow2.addEventListener("click", () => updatePopup2(currentIdx2 + 1));
-
-// Tutup popup dengan tombol Esc
-document.addEventListener("keydown", function (e) {
-    if (e.key === "Escape") {
-        popup1.classList.remove("active");
-        popup2.classList.remove("active-2");
+    function updatePopup(index) {
+        currentIndex = (index + allImages.length) % allImages.length;
+        largeImage.src = allImages[currentIndex];
+        imageIndex.textContent = String(currentIndex + 1).padStart(2, '0');
+        
+        // Update teks caption sesuai index gambar yang aktif
+        if (popupCaption) {
+            popupCaption.textContent = imageCaptions[currentIndex] || "Dokumentasi IT Bootcamp";
+        }
     }
-});
+
+    function closePopup() {
+        popup.classList.remove("active");
+        document.body.style.overflow = "";
+    }
+
+    // Event Klik Kartu / Foto di Slider
+    track.addEventListener("click", function (e) {
+        const clickedSlide = e.target.closest(".slide");
+        if (!clickedSlide) return;
+
+        const img = clickedSlide.querySelector("img");
+        if (img) {
+            // Cari index foto dari path src-nya
+            const src = img.getAttribute("src");
+            const foundIdx = allImages.findIndex(path => src.includes(path));
+            updatePopup(foundIdx !== -1 ? foundIdx : 0);
+            
+            popup.classList.add("active");
+            document.body.style.overflow = "hidden";
+        }
+    });
+
+    closeBtn.addEventListener("click", closePopup);
+
+    leftArrow.addEventListener("click", (e) => {
+        e.stopPropagation();
+        updatePopup(currentIndex - 1);
+    });
+
+    rightArrow.addEventListener("click", (e) => {
+        e.stopPropagation();
+        updatePopup(currentIndex + 1);
+    });
+
+    popup.addEventListener("click", function (e) {
+        if (e.target === popup) closePopup();
+    });
+
+    document.addEventListener("keydown", function (e) {
+        if (!popup.classList.contains("active")) return;
+        
+        if (e.key === "Escape") closePopup();
+        if (e.key === "ArrowLeft") updatePopup(currentIndex - 1);
+        if (e.key === "ArrowRight") updatePopup(currentIndex + 1);
+    });
 });
 
 // UPLOAD FILE

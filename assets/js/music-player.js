@@ -31,7 +31,7 @@
     'input[type="button"]', 'input[type="submit"]', 'input[type="reset"]',
     'input[type="checkbox"]', 'input[type="radio"]', 'input[type="file"]',
     "[data-status-option]", "[data-payment-card]",
-    ".btn", ".btn-pixel", ".btn-daftar", ".register-btn", ".retro-btn", ".copy-btn","nav__link-badge",
+    ".btn", ".btn-pixel", ".retro-btn", ".copy-btn","nav__link-badge",
     ".navbar__toggle", ".hamburger",
   ].join(",");
 

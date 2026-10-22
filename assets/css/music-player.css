@@ -23,7 +23,7 @@
   z-index:8000;                     /* di bawah .popup (9000) */
   display:flex;
   align-items:flex-end;
-  gap:var(--mp-xs);
+  gap:0;                            /* toggle menempel langsung ke kartu, bukan mengambang terpisah */
   user-select:none;
   /* keadaan awal: tersembunyi di bawah layar (slide-up saat .is-ready) */
   transform:translateY(calc(100% + var(--mp-3xl)));
@@ -50,7 +50,13 @@
     4px 4px 0 #000000,
     inset 3px 3px 0 rgba(255,255,255,0.28),
     inset -3px -3px 0 rgba(0,0,0,0.22);
-  transition:background .15s ease, transform .1s ease, box-shadow .1s ease;
+  transition:background .15s ease, transform .1s ease, box-shadow .1s ease, border-radius .2s ease;
+}
+/* Saat terbuka: sisi kanan toggle rata, menempel pas ke sisi kiri kartu -> terbaca sebagai satu gagang/laci */
+.music-player.is-open .music-player__toggle{
+  border-top-right-radius:0;
+  border-bottom-right-radius:0;
+  border-right-width:0;
 }
 .music-player__toggle:hover{ background:var(--mp-green-dark); }
 .music-player__toggle:active{
@@ -64,11 +70,21 @@
 .music-player__play:focus-visible{ outline:3px solid var(--mp-white); outline-offset:2px; }
 .music-player__toggle svg{ width:24px; height:24px; display:block; filter:drop-shadow(0 2px 0 rgba(0,0,0,0.35)); }
 
+/* Ikon toggle berubah sesuai state: tertutup -> not musik, terbuka -> silang (afforadance jelas) */
+.music-player__toggle .music-player__icon-close{ display:none; }
+.music-player.is-open .music-player__toggle .music-player__icon-note{ display:none; }
+.music-player.is-open .music-player__toggle .music-player__icon-close{ display:block; }
+
+/* Dorong perhatian ke toggle sesaat setelah widget muncul, lalu berhenti sendiri (lihat .music-player.is-ready) */
+@keyframes mp-toggle-pulse{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.08); } }
+.music-player.is-ready:not(.is-open) .music-player__toggle{ animation:mp-toggle-pulse 1s ease-in-out 1.1s 3; }
+
 /* ---------- Panel (area clip untuk animasi geser kiri/kanan) ---------- */
 .music-player__panel{
   overflow:hidden;
   padding:0 var(--mp-xs) var(--mp-xs) 0;      /* ruang untuk hard shadow */
   margin-bottom:calc(var(--mp-xs) * -1);
+  margin-left:10px;                           /* tumpang-tindih border kartu & toggle -> terlihat menyatu */
 }
 .music-player:not(.is-open) .music-player__panel{
   visibility:hidden;                                 /* tidak bisa di-tab / diklik saat tertutup */
@@ -81,7 +97,7 @@
   align-items:center;
   gap:12px;
   width:min(320px, calc(100vw - 96px));
-  padding:12px 14px;
+  padding:12px 14px 12px 18px;
   background:var(--mp-bg);
   color:var(--mp-white);
   font-family:var(--mp-font);
@@ -89,9 +105,13 @@
   border-radius:6px;
   box-shadow:6px 6px 0 #000000;                      /* hard shadow tanpa blur */
   transform:translateX(calc(-100% - var(--mp-sm)));   /* tertutup: geser ke kiri */
-  transition:transform .45s cubic-bezier(.22,1,.36,1);
+  transition:transform .45s cubic-bezier(.22,1,.36,1), border-radius .2s ease;
 }
-.music-player.is-open .music-player__card{ transform:translateX(0); }   /* terbuka: geser ke kanan */
+.music-player.is-open .music-player__card{
+  transform:translateX(0);                           /* terbuka: geser ke kanan */
+  border-top-left-radius:0;
+  border-bottom-left-radius:0;
+}
 
 /* ---------- Vinyl / Disc ---------- */
 .music-player__disc{
