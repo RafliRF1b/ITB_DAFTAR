@@ -31,39 +31,6 @@ ul,li{
 	margin:0px;	
 }
 
-/* Posisi navbar kanan dan kiri */
-
-.pull-right{
-	float: right;
-}
-
-.pull-left{
-	float: left;
-}
-
-/* Untuk Tablet (Portrait) */
-@media (max-width: 768px) {
-     /* Button BackToHIMTIKA */
-    .Btn-parent {
-        bottom: 20px;
-        right: 20px;
-    }
-    /* Button BackToHIMTIKA */
-}
-
-/* Untuk Mobile */
-@media (max-width: 480px) {
-  .btn-daftar {
-    padding: 10px 18px;
-    font-size: 0.9rem;
-  }
-  .btn {
-    padding: 12px 30px;
-    font-size: 1rem;
-  }
-}
-
-
 /* 
 =====================================================================
   IT BOOTCAMP 2026 — INDEPENDENT PROJECT (Minecraft theme redesign)
@@ -2022,7 +1989,7 @@ button{ font-family:inherit; cursor:pointer; }
 
   .dokumentasi{ padding:60px 0px 160px; }
   .dokumentasi__grid{ grid-template-columns:1fr; grid-template-rows:repeat(6,1fr); }
-
+  .Btn-parent { right: 12px; bottom: 12px; }
 }
 
 
