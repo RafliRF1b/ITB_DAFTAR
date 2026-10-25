@@ -1704,6 +1704,10 @@ button{ font-family:inherit; cursor:pointer; }
   .hero__subtitle{ max-width:520px; font-size:22px; line-height: 25px; }
   .btn-pixel{ width:260px; height:52px; }
 
+  .section-title{
+    line-height:44px;
+  }
+
   .about__grid{ flex-direction:column; gap:24px; align-items:flex-start; }
   .about__text{ max-width:100%; font-size: 14px; }
   .about__book { top: 10px; width: 59px; height: 52px;}
@@ -1786,7 +1790,7 @@ button{ font-family:inherit; cursor:pointer; }
     --fs-body-md:16px;
     --fs-body-sm:15px;
   }
-  .section-title{ line-height:1.5; }
+  .section-title{ line-height:1.6; }
   .section-badge{
     font-size:12px;
     filter:drop-shadow(4px 4px 0px #000000);
